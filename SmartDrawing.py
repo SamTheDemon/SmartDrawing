@@ -9,9 +9,9 @@ brushThickness = 15
 eraserThickness = 50
 ###########
 
-# min  from YouTube
 # this draws only for the right hand not the left one.
-folderPath = "Header"
+
+folderPath = "tools"
 myList = os.listdir(folderPath)
 # print(myList)
 overLayList = []
@@ -21,8 +21,8 @@ for imPath in myList:
     overLayList.append(image)
 # print(len(overLayList))
 
-header = overLayList[0]
-drawColor = (0, 0, 0)  # default
+sidebar = overLayList[0]
+drawColor = (255, 255, 255)  # default
 
 cap = cv2.VideoCapture(0)
 
@@ -54,33 +54,33 @@ while True:
         # print(fingers) #show the list which finger is up
 
         # 4- selections mode.
-        if fingers[1] and fingers[2]:
+        if fingers[1] and fingers[2] :
             xp, yp = 0, 0
             print("Selection Mode")
             # checking for the click
-            if y1 < 125:
-                if 250 < x1 < 450:
-                    header = overLayList[0]
-                    drawColor = (0, 250, 0)  # black
-                elif 550 < x1 < 750:
-                    header = overLayList[1]
-                    drawColor = (0, 0, 255)  # Red
-                elif 800 < x1 < 950:
-                    header = overLayList[2]
-                    drawColor = (255, 0, 0)  # BLUE
-                elif 1050 < x1 < 1200:
-                    header = overLayList[3]
-                    header = overLayList[2]
+            if x1 > 1210:
+                if 300 < y1 < 340:
+                    sidebar = overLayList[0]
                     drawColor = (255, 255, 255)  # white
+                elif 350 < y1 < 425:
+                    sidebar = overLayList[1]
+                    drawColor = (0, 0, 255)  # Red
+                elif 450 < y1 < 510:
+                    sidebar = overLayList[2]
+                    drawColor = (255, 0, 0)  # BLUE
+                #  4-erase - selection- and drawing
+                elif 0 < y1 < 250:
+                    sidebar = overLayList[3]
+                   # header = overLayList[2]
+                    drawColor = (0, 0, 0)  # black again -erase
                 cv2.rectangle(img, (x1, y1 - 15), (x2, y2 + 15), drawColor, cv2.FILLED)
 
-        # 5- selections mode.
+        # 5- Drawing mode.
         if fingers[1] and fingers[2] == False:
             cv2.circle(img, (x1, y1), 15, drawColor, cv2.FILLED)
             print("Drawing Mode")
             if xp == 0 and yp == 0:
                 xp, yp = x1, y1
-
             if drawColor == (0, 0, 0):
                 cv2.line(img, (xp, yp), (x1, y1), drawColor, eraserThickness)
                 cv2.line(imgCanvas, (xp, yp), (x1, y1), drawColor, eraserThickness)
@@ -89,9 +89,9 @@ while True:
                 cv2.line(imgCanvas, (xp, yp), (x1, y1), drawColor, brushThickness)
         xp, yp = x1, y1
 
-    #     - erase - selection- and drawing
 
-    # layering our images
+
+    # layering the images
     imgGrey = cv2.cvtColor(imgCanvas, cv2.COLOR_BGR2GRAY)
     _, imgInv = cv2.threshold(imgGrey, 50, 255, cv2.THRESH_BINARY_INV)
     imgInv = cv2.cvtColor(imgInv, cv2.COLOR_GRAY2BGR)
@@ -99,7 +99,7 @@ while True:
     img = cv2.bitwise_or(img, imgCanvas)
 
     # setting header image
-    img[0:100, 0:1280] = header
+    img[0:720, 1210:1280] = sidebar
     # img = cv2.addWeighted(img, 0.5, imgCanvas, 0.5, 0)
 
     cv2.imshow('Image', img)
